@@ -227,20 +227,9 @@ export default function Impresoras() {
   const obtenerImpresoras = async (tipoBusqueda, valorBusqueda) => {
     try {
       let url;
-  
-      // Evaluar el tipo de búsqueda y construir la URL correspondiente
       if (tipoBusqueda === 'serial') {
-        url = `http://localhost:8000/api/inventario/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'mac') {
-        url = `http://localhost:8000/api/inventario/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'ubicacion') {
-        url = `http://localhost:8000/api/inventario/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'ip') {
-        url = `http://localhost:8000/api/inventario/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'sedes') {
-        url = `http://localhost:8000/api/inventario/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'pisos') {
-        url = `http://localhost:8000/api/inventario/listarID/${valorBusqueda}`;
+        // Usar el valor del serial como parámetro en la URL
+        url = `http://localhost:8000/api/inventario/impres/listarID/${valorBusqueda}`;
       } else {
         console.error('Tipo de búsqueda inválido:', tipoBusqueda);
         return; // Manejar el tipo de búsqueda inválido
@@ -254,15 +243,14 @@ export default function Impresoras() {
       });
   
       const datos = await respuesta.json();
-  
-      if (datos && datos.verificarPro) {
-        setImpresoras([datos.verificarPro]); // Suponiendo un único resultado
+      if (datos && datos.compuVeri) {
+        setImpresoras([datos.compuVeri]); // Suponiendo un único resultado
       } else {
         console.error('API no responde o registro no encontrado.');
         setImpresoras([]); // Limpiar datos si no hay resultados
       }
     } catch (error) {
-      console.error('Error al obtener impresoras:', error);
+      console.error('Error al obtener computadores:', error);
     }
   };
 

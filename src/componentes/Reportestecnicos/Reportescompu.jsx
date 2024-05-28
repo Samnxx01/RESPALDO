@@ -7,6 +7,8 @@ import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import { useNavigate } from 'react-router-dom';
 import '../Reportestecnicos/reportes.css'
+import { jsPDF } from 'jspdf'
+import 'jspdf-autotable';
 
 export default function Reportescompu() {
 
@@ -122,6 +124,7 @@ export default function Reportescompu() {
     fetchData();
   }, []);
 
+
   useEffect(() => {
     const fetchImpresoras = async () => {
       try {
@@ -212,7 +215,118 @@ export default function Reportescompu() {
     fetchOptions();
   }, []);
 
+  const enviarReportes = () => {
+    navigate('/listarReportes');
+  };
+  const enviarMenu = () => {
+    navigate('/Home');
+  };
+  useEffect(() => {
+    const fetchReportes = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/inventario/reportes/listar', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
+        const data = await response.json();
+
+        // Ensure data has the expected structure and property
+        if (data && data.mostrarReportes) {
+          setReportes(data.mostrarReportes);
+        } else {
+          console.error('la api no responde.');
+          // Handle the case where the API data is missing or has an unexpected structure
+        }
+      } catch (error) {
+        console.error('Error fetching impresoras:', error);
+      }
+    };
+
+    fetchReportes();
+  }, [])
+
+  const rows = computadoress.map((regis) => ({
+    id: regis._id,
+    fecha: regis.fecha,
+    sede: regis.sede,
+    ubicacion: regis.ubicacion,
+    area: regis.area,
+    marca: regis.marca,
+    nombre_equipo: regis.nombre_equipo,
+    sistema_operativo: regis.sistema_operativo,
+    placa: regis.placa,
+    disco_duro: regis.disco_duro,
+    memoria_ram: regis.memoria_ram,
+    serial: regis.serial,
+    mac: regis.mac,
+    ip: regis.ip,
+    usuario: regis.usuario,
+    clave: regis.clave,
+    nombre_asignado: regis.nombre_asignado,
+    cedula: regis.cedula,
+    dominio: regis.dominio,
+    fecha_mantenimiento: regis.fecha_mantenimiento,
+    tecnico: regis.tecnico,
+    observaciones: regis.observaciones,
+    img: regis.img,
+  }));
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    // Generar PDF solo con filas seleccionadas
+    doc.autoTable({
+      head: [['Fecha', 'Sedes', 'Ubicacion', 'Area', 'Marca', 'Nombre_equipo', 'Sistema Operativo', 'Placa', 'Disco Duro', 'Memoria Ram', 'IP', 'Serial', 'MAC', 'Usuario', 'Clave', 'Nombre_asignado', 'Cedula', 'Dominio', 'Fecha Mantenimiento', 'Técnico', 'Observaciones', 'Imagen']],
+      body: rows.map(computador => [
+        computador.fecha,
+        computador.sede,
+        computador.ubicacion,
+        computador.area,
+        computador.marca,
+        computador.nombre_equipo,
+        computador.sistema_operativo,
+        computador.placa,
+        computador.disco_duro,
+        computador.memoria_ram,
+        computador.serial,
+        computador.mac,
+        computador.ip,
+        computador.usuario,
+        computador.clave,
+        computador.nombre_asignado,
+        computador.cedula,
+        computador.dominio,
+        computador.fecha_mantenimiento,
+        computador.observaciones,
+        computador.img
+      ]),
+      styles: {
+        tableWidth: 'wrap',
+        tableHeight: 'auto',
+        fontSize: 5, // Tamaño de fuente
+        cellPadding: 2, // Espaciado interno de las celdas
+        cellWidth: 9, // Ajuste automático del ancho de la celda
+        valign: 'middle', // Alineación vertical del texto
+        halign: 'center', // Alineación horizontal del texto
+        overflow: 'linebreak', // Manejo de saltos de línea
+        lineWidth: 0.1, // Ancho del borde de la tabla
+        lineColor: [0, 0, 0], // Color del borde de la tabla
+        fontStyle: 'normal', // Estilo de fuente
+        textColor: [0, 0, 0], // Color del texto
+        fillColor: [255, 255, 255], // Color de fondo de la celda
+        rowPageBreak: 'auto', // Control de salto de página por fila
+        columnWidth: 'auto' // Ancho automático de columna
+      }
+    });
+
+    // Guardar el PDF con un nombre específico
+    doc.save(`Tabla de computador.pdf`);
+  };
+  const [reportes, setReportes] = useState([])
+
+  console.log(reportes)
   return (
     <>
       <html lang="en">
@@ -223,9 +337,12 @@ export default function Reportescompu() {
         </head>
         <body>
           <Narvbar />
+          <Button variant='warning' onClick={enviarMenu} style={{ marginLeft: '50px' }} >Menu principal</Button>
+          <Button variant='warning' onClick={generatePDF} style={{ marginLeft: '50px' }}> Generar PDF</Button>
+          <Button variant='warning' onClick={enviarReportes} style={{ marginLeft: '50px' }}> Listamos los reportes</Button>
           <Container className="d-flex justify-content-center align-items-center" style={{ justifyContent: 'center' }}>
-            <Row style={{display:'flex', justifyContent:'center'}}>
-              <Form style={{marginTop:'50px'}} className="reporte-formu" >
+            <Row style={{ display: 'flex', justifyContent: 'center' }}>
+              <Form style={{ marginTop: '50px' }} className="reporte-formu" >
                 <Row className="mb-3">
                   <Form.Group as={Col} >
                     <Form.Label><th>Fecha</th></Form.Label>
@@ -586,9 +703,9 @@ export default function Reportescompu() {
                   </Form.Group>
                 </Row>
                 <Form.Group controlId="formFileLg" className="mb-3">
-                <Form.Label>Subir el archivo</Form.Label>
-                <Form.Control type="file" onChange={handleFileChange} />
-              </Form.Group>
+                  <Form.Label>Subir el archivo</Form.Label>
+                  <Form.Control type="file" onChange={handleFileChange} />
+                </Form.Group>
                 <Row className="mb-3">
 
                   <Form.Group as={Col} >

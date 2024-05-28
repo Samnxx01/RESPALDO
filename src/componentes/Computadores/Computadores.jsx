@@ -736,7 +736,7 @@ export default function Computadores() {
                 },
               }}
               pageSizeOptions={[5, 10, 15, 20, 25, 30, 35, 40, 45, 50]}
-              checkboxSelection
+             
             />
           </div>
           <Modal show={showModi} onHide={handleCloseModi}>

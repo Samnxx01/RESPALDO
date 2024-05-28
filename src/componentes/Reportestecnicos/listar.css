@@ -1,0 +1,16 @@
+.formulario {
+    padding: 50px;
+    border: 1px solid #fd4343;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    width: 100em;
+  }
+  
+  .formulario- label {
+    font-weight: bold;
+  }
+  
+  .formulario .form-control {
+    margin-bottom: 15px;
+  }
+  
