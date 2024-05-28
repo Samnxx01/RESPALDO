@@ -321,6 +321,7 @@ export default function Impresoras() {
     }));
 
     const generatePDF = () => {
+
       const doc = new jsPDF()
   
   

@@ -43,14 +43,13 @@ export default function datable() {
 
 
 
-  const [computadoressImg, setComputadoresImg] = useState([]);
-  const [computadoress, setComputadores] = useState([]);
+  //const [computadoressImg, setComputadoresImg] = useState([]);
+ 
   const componentPDF = useRef();
-  const [imagenURLs, setImagenURLs] = useState([]);
-  const [imagenFaltas, setImagenFaltas] = useState([]);
 
+  
 
-
+  
 
 
   const [archivo, setArchivo] = useState(null);
@@ -163,75 +162,91 @@ export default function datable() {
   }
   const [selectedRows, setSelectedRows] = useState([]);
 
-
- /* useEffect(() => {
+  const [imagenURLs, setImagenURLs] = useState([]);
+  const [imagenFaltas, setImagenFaltas] = useState([]);
+  const [computadoressDB, setComputadoressDB] = useState([]);
+  console.log(computadoressDB)
+  useEffect(() => {
     const obtenerImagenes = async () => {
       try {
-        const nuevasImagenes = [];
-        const nuevasFaltas = [];
-
-        for (const computadora of computadoress) {
+        const nuevasImagenesImg = [];
+        const nuevasFaltasImg = [];
+        const promesasImagenes = []; // Array para almacenar las promesas de descarga de imágenes
+  
+        for (const computadora of computadoressDB) {
           const id = computadora._id;
-          const response = await fetch(`http://localhost:8000/api/documentos/img/compus/${id}`);
-
-          if (response.ok) {
-            const imagenBlob = await response.blob();
-            const url = URL.createObjectURL(imagenBlob);
-            nuevasImagenes.push(url);
-            nuevasFaltas.push(false);
-          } else {
-            nuevasImagenes.push(null);
-            nuevasFaltas.push(true);
-          }
+          const promise = fetch(`http://localhost:8000/api/documentos/img/compus/${id}`)
+            .then(response => {
+              if (response.ok) {
+                return response.blob();
+              } else {
+                throw new Error('Error al descargar la imagen');
+              }
+            })
+            .then(imagenBlob => {
+              const url = URL.createObjectURL(imagenBlob);
+              nuevasImagenesImg.push(url);
+              nuevasFaltasImg.push(false);
+            })
+            .catch(error => {
+              console.error('Error al obtener la imagen:', error);
+              nuevasImagenesImg.push(null);
+              nuevasFaltasImg.push(true);
+            });
+  
+          promesasImagenes.push(promise);
         }
-
-        setImagenURLs(nuevasImagenes);
-        setImagenFaltas(nuevasFaltas);
+  
+        // Esperar a que se completen todas las  promesas antes de actualizar el estado
+        await Promise.all(promesasImagenes);
+  
+        setImagenURLs(nuevasImagenesImg);
+        setImagenFaltas(nuevasFaltasImg);
       } catch (error) {
         console.error('Error al obtener las imágenes:', error);
       }
     };
-
+  
     obtenerImagenes();
-  }, [computadoress]);*/
+  }, [computadoressDB]);
+  
 
 
   const [imagenURLsSu, setImagenURLsSu] = useState([]);
   const [imagenFaltasSu, setImagenFaltasSu] = useState([]);
   const [imagenesDb, setImagenes] = useState([]);
 
-  console.log(imagenesDb)
 
-  useEffect(() => {
-    const obtenerImagenesDB = async () => {
-      try {
-        const nuevasImagenes = [];
-        const nuevasFaltas = [];
 
-        for (const imagen of imagenesDb) {
-          const id = imagen._id;
-          const response = await fetch(`http://localhost:8000/api/documentos/hospital/ArchivosSubidos/${id}`);
-
-          if (response.ok) {
-            const imagenBlob = await response.blob();
-            const url = URL.createObjectURL(imagenBlob);
-            nuevasImagenes.push(url);
-            nuevasFaltas.push(false);
-          } else {
-            nuevasImagenes.push(null);
-            nuevasFaltas.push(true);
-          }
-        }
-
-        setImagenURLsSu(nuevasImagenes);
-        setImagenFaltasSu(nuevasFaltas);
-      } catch (error) {
-        console.error('Error al obtener las imágenes:', error);
-      }
-    };
-
-    obtenerImagenesDB();
-  }, [imagenesDb]);
+  /* useEffect(() => {
+     const obtenerImagenesDB = async () => {
+       try {
+         const nuevasImagenes = [];
+         const nuevasFaltas = [];
+ 
+         for (const imagen of imagenesDb) {
+           const id = imagen._id;
+           const response = await fetch(`http://localhost:8000/api/documentos/hospital/ArchivosSubidos/${id}`);
+ 
+           if (response.ok) {
+             const imagenBlob = await response.blob();
+             const url = URL.createObjectURL(imagenBlob);
+             nuevasImagenes.push(url);
+             nuevasFaltas.push(false);
+           } else {
+             nuevasImagenes.push(null);
+             nuevasFaltas.push(true);
+           }
+         }
+         setImagenURLsSu(nuevasImagenes);
+         setImagenFaltasSu(nuevasFaltas);
+       } catch (error) {
+         console.error('Error al obtener las imágenes:', error);
+       }
+     };
+ 
+     obtenerImagenesDB();
+   }, [imagenesDb]);*/
 
   /* useEffect(() => {
      const obtenerImagenes = async () => {
@@ -305,10 +320,9 @@ export default function datable() {
         });
 
         const data = await response.json();
-
         // Ensure data has the expected structure and property
         if (data && data.listarCompu) {
-          setComputadores(data.listarCompu);
+          setComputadoressDB(data.listarCompu);
         } else {
           console.error('la api no responde.');
           // Handle the case where the API data is missing or has an unexpected structure
@@ -320,7 +334,7 @@ export default function datable() {
 
     fetchCompu();
   }, []);
-  useEffect(() => {
+ /* useEffect(() => {
     const fetchImagenes = async () => {
       try {
         const response = await fetch('http://localhost:8000/api/documentos/listarImg', {
@@ -345,7 +359,7 @@ export default function datable() {
     };
 
     fetchImagenes();
-  }, []);
+  }, []);*/
 
   /*
     useEffect(() => {
@@ -420,7 +434,7 @@ export default function datable() {
       console.error('Error al subir el archivo:', error);
     }
   };
-
+/*
   useEffect(() => {
     const fetchImpresoras = async () => {
       try {
@@ -444,9 +458,9 @@ export default function datable() {
         console.error('Error fetching impresoras:', error);
       }
     };
-
+    
     fetchImpresoras();
-  }, []);
+  }, []);*/
   //Logica para modificar impresora
   const handleSubmitModificar = async (e, id) => {
     e.preventDefault();
@@ -574,9 +588,9 @@ export default function datable() {
           </tr>
         </thead>
         <tbody>
-          {imagenURLsSu.map((url, index) => (
+          {imagenURLs.map((url, index) => (
             <tr key={index}>
-              {imagenFaltasSu[index] ? (
+              {imagenFaltas[index] ? (
                 <td>La imagen no está disponible</td>
               ) : (
                 <td><img src={url} alt="Imagen" /></td>

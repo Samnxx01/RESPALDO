@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
+import { useNavigate } from 'react-router-dom';
 import '../Reportestecnicos/reportes.css'
 
 export default function Reportescompu() {
@@ -38,7 +39,7 @@ export default function Reportescompu() {
     img: ''
   });
 
-
+  const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
   const [computadoress, setComputadoresss] = useState([]);
   const [bajas, setBajas] = useState([]);

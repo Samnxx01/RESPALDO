@@ -51,6 +51,7 @@ export default function Computadores() {
   const [computadoress, setComputadores] = useState([]);
   const [seleccionaModificacion, setSeleccionModificacion] = useState({})
   const [serial, setSerial] = useState('');
+  const [id, setId] = useState('');
   const [ip, setIp] = useState('');
   const handleCloseID = () => setShowID(false);
   const handleShowID = () => setShowID(true);
@@ -119,42 +120,22 @@ export default function Computadores() {
   const obtenerComputadores = async (tipoBusqueda, valorBusqueda) => {
     try {
       let url;
-
-      // Evaluar el tipo de búsqueda y construir la URL correspondiente
       if (tipoBusqueda === 'serial') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'mac') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'ubicacion') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'ip') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'sede') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'mac') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'area') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'placa') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'marca') {
-        url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
-      } else if (tipoBusqueda === 'cedula') {
+        // Usar el valor del serial como parámetro en la URL
         url = `http://localhost:8000/api/inventario/compu/listarID/${valorBusqueda}`;
       } else {
         console.error('Tipo de búsqueda inválido:', tipoBusqueda);
         return; // Manejar el tipo de búsqueda inválido
       }
-
+  
       const respuesta = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-
+  
       const datos = await respuesta.json();
-
       if (datos && datos.compuVeri) {
         setComputadores([datos.compuVeri]); // Suponiendo un único resultado
       } else {
@@ -162,12 +143,12 @@ export default function Computadores() {
         setComputadores([]); // Limpiar datos si no hay resultados
       }
     } catch (error) {
-      console.error('Error al obtener impresoras:', error);
+      console.error('Error al obtener computadores:', error);
     }
   };
 
 
-  const obtenerComputadoresIP = async (tipoBusqueda, valorBusqueda) => {
+ /* const obtenerComputadoresIP = async (tipoBusqueda, valorBusqueda) => {
     try {
       let url;
       if (tipoBusqueda === 'ip') {
@@ -195,9 +176,9 @@ export default function Computadores() {
     } catch (error) {
       console.error('Error al obtener impresoras:', error);
     }
-  };
+  };*/
   useEffect(() => {
-    const fetchImpresoras = async () => {
+    const fetchComputadoresss = async () => {
       try {
         const response = await fetch('http://localhost:8000/api/inventario/listarcompu', {
           method: 'GET',
@@ -220,7 +201,7 @@ export default function Computadores() {
       }
     };
 
-    fetchImpresoras();
+    fetchComputadoresss();
   }, []);
 
   //CLICK CON TECLADO
@@ -247,7 +228,7 @@ export default function Computadores() {
   };
 
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!archivo) {
@@ -404,31 +385,13 @@ const handleSubmit = async (e) => {
     observaciones: regis.observaciones,
     img: regis.img,
   }));
+
   const generatePDF = () => {
-    const doc = new jsPDF()
-                                  
+    const doc = new jsPDF();
 
-
-    /* impresoras.forEach((impresora, index) => {
-       y += 10; // Incrementar la posición vertical para cada impresora
-       // Agregar los datos de cada impresora al PDF
-       doc.text('Tabla de impresoras', 15,5)
-       doc.text(`Impresora :`, 10, y);
-       doc.text(`Sedes: ${impresora.sedes}`, 10, y + 10);
-       doc.text(`Pisos: ${impresora.pisos}`, 10, y + 20);
-       doc.text(`IP: ${impresora.ip}`, 10, y + 30);
-       doc.text(`Serial: ${impresora.serial}`, 10, y + 40);
-       doc.text(`Ubicacion: ${impresora.ubicacion}`, 10, y + 50);
-       doc.text(`MAC: ${impresora.mac}`, 10, y + 60);
-       doc.text(`Marca: ${impresora.marca}`, 10, y + 70);
-       doc.text(`Contador: ${impresora.contador}`, 10, y + 80);
-       doc.text(`Fecha: ${impresora.fecha}`, 10, y + 90);
-   });*/
-    //crear tablas 
-
-
+    // Generar PDF solo con filas seleccionadas
     doc.autoTable({
-      head: [['Fecha','Sedes', 'Ubicacion','Area','Marca','Nombre_equipo','Sistema Operativo','Plca','Disco Duro', 'Memoria Ram','IP', 'Serial', 'MAC', 'Usuario', 'Clave', 'Nombre_asignado', 'Cedula', 'Dominio', 'Fecha Mantenimiento', 'Técnico', 'Observaciones', 'Imagen']],
+      head: [['Fecha', 'Sedes', 'Ubicacion', 'Area', 'Marca', 'Nombre_equipo', 'Sistema Operativo', 'Placa', 'Disco Duro', 'Memoria Ram', 'IP', 'Serial', 'MAC', 'Usuario', 'Clave', 'Nombre_asignado', 'Cedula', 'Dominio', 'Fecha Mantenimiento', 'Técnico', 'Observaciones', 'Imagen']],
       body: rows.map(computador => [
         computador.fecha,
         computador.sede,
@@ -440,16 +403,15 @@ const handleSubmit = async (e) => {
         computador.placa,
         computador.disco_duro,
         computador.memoria_ram,
-        computador.ip,
         computador.serial,
         computador.mac,
+        computador.ip,
         computador.usuario,
         computador.clave,
         computador.nombre_asignado,
         computador.cedula,
         computador.dominio,
         computador.fecha_mantenimiento,
-        computador.tecnico,
         computador.observaciones,
         computador.img
       ]),
@@ -471,10 +433,10 @@ const handleSubmit = async (e) => {
         columnWidth: 'auto' // Ancho automático de columna
       }
     });
-    //guardar el pdf un nombre especifico 
-    doc.save(`Tabla de computador.pdf`)
 
-  }
+    // Guardar el PDF con un nombre específico
+    doc.save(`Tabla de computador.pdf`);
+  };
 
   return (
     <>
@@ -485,14 +447,14 @@ const handleSubmit = async (e) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <title>Computadores</title>
         </head>
-        <body style={{backgroundImage:`url(${imgs})`, backgroundSize:'cover', margin:'0', padding:'0' }}>
+        <body style={{ backgroundImage: `url(${imgs})`, backgroundSize: 'cover', margin: '0', padding: '0' }}>
           <Narvbar />
-          <Button style={{ marginTop:'10px', marginRight: '20px' }} variant="dark" onClick={enviarMenu}>Menu principal</Button>
-          <Button variant="success"  style={{ marginTop:'10px', marginRight: '20px' }} onClick={generatePDF}>Generar PDF </Button>
-          <Button style={{ marginTop:'10px', marginRight: '20px' }} variant="primary" onClick={handleShow}>
+          <Button style={{ marginTop: '10px', marginRight: '20px' }} variant="dark" onClick={enviarMenu}>Menu principal</Button>
+          <Button variant="success" style={{ marginTop: '10px', marginRight: '20px' }} onClick={generatePDF}>Generar PDF </Button>
+          <Button style={{ marginTop: '10px', marginRight: '20px' }} variant="primary" onClick={handleShow}>
             Aqui agregas el computador
           </Button>
-          <Button style={{marginTop:'10px',}} variant="success" onClick={handleShowID}>
+          <Button style={{ marginTop: '10px', }} variant="success" onClick={handleShowID}>
             Listar por SERIAL
           </Button>
 
@@ -732,7 +694,7 @@ const handleSubmit = async (e) => {
                 </Form.Group>
                 <Form.Group controlId="formFile" className="mb-3">
                   <Form.Label>Subir archivo</Form.Label>
-                  <Form.Control type="file"  onChange={handleFileChange} />
+                  <Form.Control type="file" onChange={handleFileChange} />
                 </Form.Group>
               </Form>
             </Modal.Body>
