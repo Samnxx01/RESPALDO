@@ -39,6 +39,14 @@ export default function listarReportes() {
         img: ''
     });
 
+    const handleNumeroCasoChange = (e) => {
+        const selectedNumeroCaso = e.target.value;
+        const selectedReporte = reportes.find(reporte => reporte.numero_caso === selectedNumeroCaso);
+        if (selectedReporte) {
+            setFormData(selectedReporte);
+        }
+    };
+
     useEffect(() => {
         const fetchReportes = async () => {
             try {
@@ -81,20 +89,22 @@ export default function listarReportes() {
                                 <Row className="mb-3">
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Fecha</th></Form.Label>
-                                        <Form.Select aria-label="reporte_garantia" name="reporte_garantia" value={formData.reporte_garantia}
-                                        >
+                                        <Form.Select aria-label="reporte_garantia" name="reporte_garantia" value={formData.reporte_garantia}>
                                             <option value="" >Seleccione fecha</option>
 
 
 
                                         </Form.Select>
                                     </Form.Group>
-
-                                    <Form.Group as={Col} >
+                                    <Form.Group as={Col}>
                                         <Form.Label><th>Numero caso</th></Form.Label>
-                                        <Form.Select aria-label="reporte_garantia" name="reporte_garantia" value={formData.reporte_garantia}
-                                        >
-                                            <option value="" >Seleccione numero caso</option>
+                                        <Form.Select aria-label="numero_caso" name="numero_caso" onChange={handleNumeroCasoChange}>
+                                            <option value="">Seleccione número de caso</option>
+                                            {reportes.map(reporte => (
+                                                <option key={reporte.numero_caso} value={reporte.numero_caso}>
+                                                    {reporte.numero_caso}
+                                                </option>
+                                            ))}
                                         </Form.Select>
                                     </Form.Group>
                                 </Row>
@@ -126,7 +136,7 @@ export default function listarReportes() {
                                     <Form.Group className="mb-3" as={Col}>
                                         <Form.Label><th>Area</th></Form.Label>
                                         <Form.Control type="email" placeholder="Correo electronico"
-    
+
                                             required />
                                     </Form.Group>
                                     <Form.Group as={Col}>
@@ -142,7 +152,7 @@ export default function listarReportes() {
                                     <Form.Group className="mb-3" as={Col}>
                                         <Form.Label><th>Tipo de equipo</th></Form.Label>
                                         <Form.Control type="email" placeholder="Correo electronico"
- 
+
                                             required />
                                     </Form.Group>
                                     <Form.Group className="mb-3" as={Col}>
@@ -167,65 +177,44 @@ export default function listarReportes() {
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Equipo de garantia</th></Form.Label>
-                                        <Form.Select aria-label="equipo_garantia" name="equipo_garantia" value={formData.equipo_garantia} >
-                                            <option>Seleccione el area</option>
-                                            <option value="SI">SI</option>
-                                            <option value="NO">N/A</option>
-                                        </Form.Select>
+                                        <Form.Control type="email" placeholder="Correo electronico"
+
+                                            required />
                                     </Form.Group>
                                 </Row>
                                 <Row className="mb-3">
                                     <th className="mb-3" >Datos del ingeniero</th>
                                     <Form.Group className="mb-3" as={Col}>
                                         <Form.Label><th>Nombre Completo</th></Form.Label>
-                                        <Form.Select aria-label="nombre_ingeniero" name="nombre_ingeniero" value={formData.nombre_ingeniero}
-                                        >
-                                            <option >Selecciona un usuario</option>
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
-
-                                        </Form.Select>
+                                            required />
                                     </Form.Group>
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Correo Electronico</th></Form.Label>
-                                        <Form.Select aria-label="correo_ing" name="correo_ing" value={formData.correo_ing} o>
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
-                                            <option value="">Seleccione correo</option>
-
-
-
-                                        </Form.Select>
+                                            required />
                                     </Form.Group>
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Extension</th></Form.Label>
-                                        <Form.Control type="text" placeholder="Extension"
-                                            id="extension_ing"
-                                            name="extension_ing"
-                                            autoComplete="extension_ing"
-                                            value={formData.extension_ing}
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
                                             required />
                                     </Form.Group>
                                     <Form.Group className="mb-3" as={Col}>
                                         <Form.Label><th>Celular</th></Form.Label>
-                                        <Form.Select aria-label="celular_ing" name="celular_ing" value={formData.celular_ing}
-                                        >
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
-                                            <option >Seleccione telefono</option>
-
-
-
-                                        </Form.Select>
+                                            required />
                                     </Form.Group>
                                 </Row>
                                 <Row className="mb-3">
                                     <th className="mb-3">Datos de la partes instaladas</th>
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Marca</th></Form.Label>
-                                        <Form.Control type="text" placeholder="Marca" id="marca_instalado"
-                                            name="marca_instalado"
-                                            autoComplete="marca_instalado"
-                                            value={formData.marca_instalado}
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
                                             required />
                                     </Form.Group>
@@ -233,10 +222,7 @@ export default function listarReportes() {
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Modelo</th></Form.Label>
-                                        <Form.Control type="text" placeholder="Modelo" id="modelo_instalacion"
-                                            name="modelo_instalacion"
-                                            autoComplete="modelo_instalacion"
-                                            value={formData.modelo_instalacion}
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
                                             required />
                                     </Form.Group>
@@ -245,22 +231,14 @@ export default function listarReportes() {
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Serial de la parte</th></Form.Label>
-                                        <Form.Control type="text" placeholder="Serial de la parte"
-                                            id="serial_parte"
-                                            name="serial_parte"
-                                            autoComplete="serial_parte"
-                                            value={formData.serial_parte}
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
                                             required />
                                     </Form.Group>
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Fecha de instalacion</th></Form.Label>
-                                        <Form.Control type="text" placeholder="Fecha de instalacion"
-                                            id="fecha_instalacion"
-                                            name="fecha_instalacion"
-                                            autoComplete="fecha_instalacion"
-                                            value={formData.fecha_instalacion}
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
                                             required />
                                     </Form.Group>
@@ -269,23 +247,16 @@ export default function listarReportes() {
                                     <th className="mb-3">Datos de la parte defectuosa</th>
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Tipo de parte</th></Form.Label>
-                                        <Form.Select aria-label="reporte_garantia" name="reporte_garantia" value={formData.reporte_garantia}
-                                        >
-                                            <option value="" >Seleccione memoria ram</option>
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
-
-
-                                        </Form.Select>
+                                            required />
                                     </Form.Group>
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Serial defectuoso</th></Form.Label>
-                                        <Form.Select aria-label="serial_garantia" name="serial_garantia" value={formData.serial_garantia}
-                                        >
-                                            <option value="" >Seleccione disco duro</option>
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
-
-                                        </Form.Select>
+                                            required />
                                     </Form.Group>
                                 </Row>
                                 <Row className="mb-3">
@@ -293,34 +264,23 @@ export default function listarReportes() {
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Tipo de parte</th></Form.Label>
-                                        <Form.Select aria-label="tipo_parte">
-                                            <option value="" >Seleccione disco duro</option>
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
-
-
-                                        </Form.Select>
+                                            required />
                                     </Form.Group>
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th>Serial de parte</th></Form.Label>
-                                        <Form.Select aria-label="serial_equipo_baja" name="serial_equipo_baja" value={formData.serial_equipo_baja}
-                                        >
-                                            <option>Seleccione serial</option>
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
-
-
-                                        </Form.Select>
+                                            required />
                                     </Form.Group>
 
                                 </Row>
                                 <Row className="mb-3">
                                     <Form.Group className="mb-3" >
                                         <Form.Label><th>Diagnostico de elemento</th></Form.Label>
-                                        <Form.Control type="text" placeholder="Escriba su diagnostico"
-                                            id="diagnostico"
-                                            name="diagnostico"
-                                            autoComplete="diagnostico"
-                                            value={formData.diagnostico}
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
                                             required />
                                     </Form.Group>
@@ -329,11 +289,7 @@ export default function listarReportes() {
 
                                     <Form.Group as={Col} >
                                         <Form.Label><th></th></Form.Label>
-                                        <Form.Control type="text" placeholder="Activos fijos"
-                                            id="activos_fijos"
-                                            name="activos_fijos"
-                                            autoComplete="activos_fijos"
-                                            value={formData.activos_fijos}
+                                        <Form.Control type="email" placeholder="Correo electronico"
 
                                             required />
                                         <th>Activos Fijos</th>

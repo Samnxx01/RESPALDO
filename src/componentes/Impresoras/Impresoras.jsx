@@ -10,8 +10,8 @@ import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DataGrid } from '@mui/x-data-grid';
 import { jsPDF } from 'jspdf'
-import 'jspdf-autotable'; 
-import imgs from '../../../public/img/clinicauros.jpg' 
+import 'jspdf-autotable';
+import imgs from '../../../public/img/clinicauros.jpg'
 
 
 
@@ -48,6 +48,8 @@ export default function Impresoras() {
 
   const [serial, setSerial] = useState('');
   const [ip, setIp] = useState('');
+  const [mac, setMac] = useState('');
+  const [sedes, setSedes] = useState('')
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -227,21 +229,29 @@ export default function Impresoras() {
   const obtenerImpresoras = async (tipoBusqueda, valorBusqueda) => {
     try {
       let url;
+      let endpoint;
+
+      // Determinar la URL y el endpoint según el tipo de búsqueda
       if (tipoBusqueda === 'serial') {
-        // Usar el valor del serial como parámetro en la URL
-        url = `http://localhost:8000/api/inventario/impres/listarID/${valorBusqueda}`;
+        endpoint = 'impres';
+      } else if (tipoBusqueda === 'ip') {
+        endpoint = 'ip';
+      } else if (tipoBusqueda === 'mac') {
+        endpoint = 'mac';
       } else {
         console.error('Tipo de búsqueda inválido:', tipoBusqueda);
         return; // Manejar el tipo de búsqueda inválido
       }
-  
+
+      url = `http://localhost:8000/api/inventario/${endpoint}/listarID/${valorBusqueda}`;
+
       const respuesta = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       const datos = await respuesta.json();
       if (datos && datos.compuVeri) {
         setImpresoras([datos.compuVeri]); // Suponiendo un único resultado
@@ -289,64 +299,64 @@ export default function Impresoras() {
       width: 200,
       renderCell: (params) => (
         <>
-          <Button variant="danger"  onClick={() => { handleDeleteImpresora(params.row.id) }} >Eliminar</Button>
-          <Button variant="info"  onClick={() => handleModificarImpresora(params.row.id)}>Modificar</Button>
+          <Button variant="danger" onClick={() => { handleDeleteImpresora(params.row.id) }} >Eliminar</Button>
+          <Button variant="info" onClick={() => handleModificarImpresora(params.row.id)}>Modificar</Button>
         </>
       ),
     },
   ];
-    const rows = impresoras.map((impresora) => ({
-      id: impresora._id,
-      sedes: impresora.sedes,
-      pisos: impresora.pisos,
-      ip: impresora.ip,
-      serial: impresora.serial,
-      ubicacion: impresora.ubicacion,
-      mac: impresora.mac,
-      marca: impresora.marca,
-      contador: impresora.contador,
-      fecha: impresora.fecha,
-    }));
+  const rows = impresoras.map((impresora) => ({
+    id: impresora._id,
+    sedes: impresora.sedes,
+    pisos: impresora.pisos,
+    ip: impresora.ip,
+    serial: impresora.serial,
+    ubicacion: impresora.ubicacion,
+    mac: impresora.mac,
+    marca: impresora.marca,
+    contador: impresora.contador,
+    fecha: impresora.fecha,
+  }));
 
-    const generatePDF = () => {
+  const generatePDF = () => {
 
-      const doc = new jsPDF()
-  
-  
-  
-      /* impresoras.forEach((impresora, index) => {
-         y += 10; // Incrementar la posición vertical para cada impresora
-         // Agregar los datos de cada impresora al PDF
-         doc.text('Tabla de impresoras', 15,5)
-         doc.text(`Impresora :`, 10, y);
-         doc.text(`Sedes: ${impresora.sedes}`, 10, y + 10);
-         doc.text(`Pisos: ${impresora.pisos}`, 10, y + 20);
-         doc.text(`IP: ${impresora.ip}`, 10, y + 30);
-         doc.text(`Serial: ${impresora.serial}`, 10, y + 40);
-         doc.text(`Ubicacion: ${impresora.ubicacion}`, 10, y + 50);
-         doc.text(`MAC: ${impresora.mac}`, 10, y + 60);
-         doc.text(`Marca: ${impresora.marca}`, 10, y + 70);
-         doc.text(`Contador: ${impresora.contador}`, 10, y + 80);
-         doc.text(`Fecha: ${impresora.fecha}`, 10, y + 90);
-     });*/
-      //crear tablas 
-  
-  
-  
-      doc.autoTable({
-        head: [['Sedes', 'Pisos', 'IP', 'Serial', 'Ubicacion', 'MAC', 'Marca', 'Contador', 'Fecha']],
-        body: rows.map(impresora => [impresora.sedes, impresora.pisos, impresora.ip, impresora.serial, impresora.ubicacion, impresora.mac, impresora.marca, impresora.contador, impresora.fecha]),
-        styles: {
-          tableWidth: 'wrap',
-          tableHeight: 'auto'
-  
-        }
-      });
-  
-      //guardar el pdf un nombre especifico 
-      doc.save(`Tabla de impresoras.pdf`)
-  
-    }
+    const doc = new jsPDF()
+
+
+
+    /* impresoras.forEach((impresora, index) => {
+       y += 10; // Incrementar la posición vertical para cada impresora
+       // Agregar los datos de cada impresora al PDF
+       doc.text('Tabla de impresoras', 15,5)
+       doc.text(`Impresora :`, 10, y);
+       doc.text(`Sedes: ${impresora.sedes}`, 10, y + 10);
+       doc.text(`Pisos: ${impresora.pisos}`, 10, y + 20);
+       doc.text(`IP: ${impresora.ip}`, 10, y + 30);
+       doc.text(`Serial: ${impresora.serial}`, 10, y + 40);
+       doc.text(`Ubicacion: ${impresora.ubicacion}`, 10, y + 50);
+       doc.text(`MAC: ${impresora.mac}`, 10, y + 60);
+       doc.text(`Marca: ${impresora.marca}`, 10, y + 70);
+       doc.text(`Contador: ${impresora.contador}`, 10, y + 80);
+       doc.text(`Fecha: ${impresora.fecha}`, 10, y + 90);
+   });*/
+    //crear tablas 
+
+
+
+    doc.autoTable({
+      head: [['Sedes', 'Pisos', 'IP', 'Serial', 'Ubicacion', 'MAC', 'Marca', 'Contador', 'Fecha']],
+      body: rows.map(impresora => [impresora.sedes, impresora.pisos, impresora.ip, impresora.serial, impresora.ubicacion, impresora.mac, impresora.marca, impresora.contador, impresora.fecha]),
+      styles: {
+        tableWidth: 'wrap',
+        tableHeight: 'auto'
+
+      }
+    });
+
+    //guardar el pdf un nombre especifico 
+    doc.save(`Tabla de impresoras.pdf`)
+
+  }
 
   return (
     <>
@@ -356,11 +366,11 @@ export default function Impresoras() {
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <title>Impresoras</title>
         </head>
-        <body style={{backgroundImage:`url(${imgs})`, backgroundSize:'cover', margin:'0', padding:'0' }}>
+        <body style={{ backgroundImage: `url(${imgs})`, backgroundSize: 'cover', margin: '0', padding: '0' }}>
           <Narvbar />
-          <Button style={{  marginTop:'10px', marginRight: '20px' }} variant="dark" onClick={enviarMenu}>Menu principal</Button>
-          <Button variant="success"  style={{  marginTop:'10px', marginRight: '20px' }} onClick={generatePDF}>Generar PDF </Button>
-          <Button style={{ marginTop:'10px', marginRight: '20px' }} variant="success" onClick={handleShowID}>
+          <Button style={{ marginTop: '10px', marginRight: '20px' }} variant="dark" onClick={enviarMenu}>Menu principal</Button>
+          <Button variant="success" style={{ marginTop: '10px', marginRight: '20px' }} onClick={generatePDF}>Generar PDF </Button>
+          <Button style={{ marginTop: '10px', marginRight: '20px' }} variant="success" onClick={handleShowID}>
             Listar por SERIAL
           </Button>
 
@@ -376,7 +386,12 @@ export default function Impresoras() {
                     type="text"
                     placeholder="serial"
                     value={serial}
-                    onChange={(e) => setSerial(e.target.value)} />
+                    onChange={(e) => {
+                      setSerial(e.target.value);
+                      setIp(e.target.value);
+                      setMac(e.target.value);
+                    }}
+                  />
                   <Button variant="success" ref={inputRefSerial} onKeyDown={handleKeyPressSerial} onClick={() => obtenerImpresoras('serial', serial)}>Buscar</Button>
                 </Form.Group>
               </Form>
@@ -384,7 +399,7 @@ export default function Impresoras() {
             <Modal.Footer>
             </Modal.Footer>
           </Modal>
-          <Button style={{ marginTop:'10px'}} variant="primary" onClick={handleShow}>
+          <Button style={{ marginTop: '10px' }} variant="primary" onClick={handleShow}>
             Aqui se registra la impresora
           </Button>
 
@@ -605,19 +620,19 @@ export default function Impresoras() {
             </Modal>
 
           </Table>
-          <div style={{ height: 900 , width: '100%' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
-            }}
-            pageSizeOptions={[5, 10, 15, 20, 25, 30, 35, 40, 45, 50]}
-            checkboxSelection
-          />
-        </div>
+          <div style={{ height: 900, width: '100%' }}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
+              }}
+              pageSizeOptions={[5, 10, 15, 20, 25, 30, 35, 40, 45, 50]}
+              checkboxSelection
+            />
+          </div>
         </body>
       </html>
     </>

@@ -8,6 +8,7 @@ import Container from 'react-bootstrap/Container';
 import { useNavigate } from 'react-router-dom';
 import '../Reportestecnicos/reportes.css'
 import { jsPDF } from 'jspdf'
+import Modal from 'react-bootstrap/Modal';
 import 'jspdf-autotable';
 
 export default function Reportescompu() {
@@ -40,6 +41,9 @@ export default function Reportescompu() {
     coordinador_area: '',
     img: ''
   });
+
+  const [reportes, setReportes] = useState([])
+
 
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
@@ -221,6 +225,9 @@ export default function Reportescompu() {
   const enviarMenu = () => {
     navigate('/Home');
   };
+
+  const [idModi, setIdModi] = useState('');
+  const [idEliminar, setIdEliminar] = useState('');
   useEffect(() => {
     const fetchReportes = async () => {
       try {
@@ -248,83 +255,111 @@ export default function Reportescompu() {
     fetchReportes();
   }, [])
 
-  const rows = computadoress.map((regis) => ({
+  const rows = reportes.map((regis) => ({
     id: regis._id,
     fecha: regis.fecha,
-    sede: regis.sede,
-    ubicacion: regis.ubicacion,
+    numero_caso: regis.numero_caso,
+    nombre_usuario: regis.nombre_usuario,
+    cedula_usuario: regis.cedula_usuario,
+    correo_electronico_usuario: regis.correo_electronico_usuario,
     area: regis.area,
-    marca: regis.marca,
-    nombre_equipo: regis.nombre_equipo,
-    sistema_operativo: regis.sistema_operativo,
-    placa: regis.placa,
-    disco_duro: regis.disco_duro,
-    memoria_ram: regis.memoria_ram,
-    serial: regis.serial,
-    mac: regis.mac,
-    ip: regis.ip,
-    usuario: regis.usuario,
-    clave: regis.clave,
-    nombre_asignado: regis.nombre_asignado,
-    cedula: regis.cedula,
-    dominio: regis.dominio,
-    fecha_mantenimiento: regis.fecha_mantenimiento,
-    tecnico: regis.tecnico,
-    observaciones: regis.observaciones,
+    nombre_ingeniero: regis.nombre_ingeniero,
+    correo_ing: regis.correo_ing,
+    extension_ing: regis.extension_ing,
+    celular_ing: regis.celular_ing,
+    marca_dispositivos: regis.marca_dispositivos,
+    serial_dispositivo: regis.serial_dispositivo,
+    mac_dispositivos: regis.mac_dispositivos,
+    tipo_equipo: regis.tipo_equipo,
+    serial_equipo_baja: regis.serial_equipo_baja,
+    marca_instalado: regis.marca_instalado,
+    modelo_instalacion: regis.modelo_instalacion,
+    serial_parte: regis.serial_parte,
+    fecha_instalacion: regis.fecha_instalacion,
+    equipo_garantia: regis.equipo_garantia,
+    reporte_garantia: regis.reporte_garantia,
+    serial_garantia: regis.serial_garantia,
+    diagnostico: regis.diagnostico,
+    activos_fijos: regis.activos_fijos,
+    coordinador_area: regis.coordinador_area,
     img: regis.img,
   }));
+
   const generatePDF = () => {
     const doc = new jsPDF();
 
-    // Generar PDF solo con filas seleccionadas
-    doc.autoTable({
-      head: [['Fecha', 'Sedes', 'Ubicacion', 'Area', 'Marca', 'Nombre_equipo', 'Sistema Operativo', 'Placa', 'Disco Duro', 'Memoria Ram', 'IP', 'Serial', 'MAC', 'Usuario', 'Clave', 'Nombre_asignado', 'Cedula', 'Dominio', 'Fecha Mantenimiento', 'Técnico', 'Observaciones', 'Imagen']],
-      body: rows.map(computador => [
-        computador.fecha,
-        computador.sede,
-        computador.ubicacion,
-        computador.area,
-        computador.marca,
-        computador.nombre_equipo,
-        computador.sistema_operativo,
-        computador.placa,
-        computador.disco_duro,
-        computador.memoria_ram,
-        computador.serial,
-        computador.mac,
-        computador.ip,
-        computador.usuario,
-        computador.clave,
-        computador.nombre_asignado,
-        computador.cedula,
-        computador.dominio,
-        computador.fecha_mantenimiento,
-        computador.observaciones,
-        computador.img
-      ]),
-      styles: {
-        tableWidth: 'wrap',
-        tableHeight: 'auto',
-        fontSize: 5, // Tamaño de fuente
-        cellPadding: 2, // Espaciado interno de las celdas
-        cellWidth: 9, // Ajuste automático del ancho de la celda
-        valign: 'middle', // Alineación vertical del texto
-        halign: 'center', // Alineación horizontal del texto
-        overflow: 'linebreak', // Manejo de saltos de línea
-        lineWidth: 0.1, // Ancho del borde de la tabla
-        lineColor: [0, 0, 0], // Color del borde de la tabla
-        fontStyle: 'normal', // Estilo de fuente
-        textColor: [0, 0, 0], // Color del texto
-        fillColor: [255, 255, 255], // Color de fondo de la celda
-        rowPageBreak: 'auto', // Control de salto de página por fila
-        columnWidth: 'auto' // Ancho automático de columna
+    // Estilo general del documento
+    const titleStyle = { fontSize: 18, fontStyle: 'bold' };
+    const sectionTitleStyle = { fontSize: 14, fontStyle: 'bold' };
+    const textStyle = { fontSize: 12, fontStyle: 'normal' };
+
+    // Título del documento
+    doc.setFontSize(titleStyle.fontSize);
+    doc.setFont(undefined, titleStyle.fontStyle);
+    doc.text('Reporte de Equipos', 105, 20, { align: 'center' });
+
+    rows.forEach((computador, index) => {
+      if (index > 0) {
+        doc.addPage();  // Añadir una nueva página para cada informe
+      }
+
+      const startY = 30;  // Reiniciar la posición Y en cada nueva página
+
+      // Encabezado de la sección
+      doc.setFontSize(sectionTitleStyle.fontSize);
+      doc.setFont(undefined, sectionTitleStyle.fontStyle);
+      doc.text(`Equipo ${index + 1}`, 20, startY);
+
+      // Detalles del informe
+      doc.setFontSize(textStyle.fontSize);
+      doc.setFont(undefined, textStyle.fontStyle);
+
+      let yOffset = startY + 10;
+      const lineHeight = 10;
+
+      const addTextLine = (label, value) => {
+        doc.text(`${label}: ${value}`, 20, yOffset);
+        yOffset += lineHeight;
+      };
+
+      addTextLine('Fecha', computador.fecha);
+      addTextLine('Número de caso', computador.numero_caso);
+      addTextLine('Nombre del usuario', computador.nombre_usuario);
+      addTextLine('Cédula del usuario', computador.cedula_usuario);
+      addTextLine('Correo electrónico del usuario', computador.correo_electronico_usuario);
+      addTextLine('Área', computador.area);
+      addTextLine('Nombre del ingeniero', computador.nombre_ingeniero);
+      addTextLine('Correo del ingeniero', computador.correo_ing);
+      addTextLine('Celular del ingeniero', computador.celular_ing);
+      addTextLine('Marca de dispositivos', computador.marca_dispositivos);
+      addTextLine('Serial del dispositivo', computador.serial_dispositivo);
+      addTextLine('MAC de dispositivos', computador.mac_dispositivos);
+      addTextLine('Tipo de equipo', computador.tipo_equipo);
+      addTextLine('Serial del equipo dado de baja', computador.serial_equipo_baja);
+      addTextLine('Marca del equipo instalado', computador.marca_instalado);
+      addTextLine('Modelo de instalación', computador.modelo_instalacion);
+      addTextLine('Serial de la parte', computador.serial_parte);
+      addTextLine('Fecha de instalación', computador.fecha_instalacion);
+      addTextLine('Equipo en garantía', computador.equipo_garantia);
+      addTextLine('Reporte de garantía', computador.reporte_garantia);
+      addTextLine('Diagnóstico', computador.diagnostico);
+      addTextLine('Activos fijos', computador.activos_fijos);
+      addTextLine('Coordinador del área', computador.coordinador_area);
+
+      // Imagen del equipo
+      if (computador.img) {
+        doc.addImage(computador.img, 'JPEG', 150, startY + 10, 40, 40);
       }
     });
 
     // Guardar el PDF con un nombre específico
-    doc.save(`Tabla de computador.pdf`);
+    doc.save('Reporte generado.pdf');
   };
-  const [reportes, setReportes] = useState([])
+  const [showF, setShowF] = useState(false);
+
+  const handleCloseF = () => setShowF(false);
+  const handleShowF = () => setShowF(true)
+
 
   console.log(reportes)
   return (
@@ -337,9 +372,110 @@ export default function Reportescompu() {
         </head>
         <body>
           <Narvbar />
-          <Button variant='warning' onClick={enviarMenu} style={{ marginLeft: '50px' }} >Menu principal</Button>
-          <Button variant='warning' onClick={generatePDF} style={{ marginLeft: '50px' }}> Generar PDF</Button>
-          <Button variant='warning' onClick={enviarReportes} style={{ marginLeft: '50px' }}> Listamos los reportes</Button>
+          <Button variant='warning' onClick={enviarMenu} style={{ marginLeft: '20px' }} >Menu principal</Button>
+          <Button style={{ marginLeft: '50px' }} variant="primary" onClick={handleShowF}>
+            Quieres modificar el formulario
+          </Button>
+
+          <Modal show={showF} onHide={handleCloseF}>
+            <Modal.Header closeButton>
+              <Modal.Title>Modificar</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>fecha</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control type="email" placeholder="name@example.com" />
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleCloseF}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleCloseF}>
+                Save Changes
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Button variant='success' onClick={generatePDF} style={{ marginLeft: '50px' }}> Generar PDF</Button>
+          <Button variant='danger' onClick={enviarReportes} style={{ marginLeft: '50px' }}> Listamos los reportes</Button>
           <Container className="d-flex justify-content-center align-items-center" style={{ justifyContent: 'center' }}>
             <Row style={{ display: 'flex', justifyContent: 'center' }}>
               <Form style={{ marginTop: '50px' }} className="reporte-formu" >
@@ -680,7 +816,7 @@ export default function Reportescompu() {
 
                   <Form.Group as={Col} >
                     <Form.Label><th>Serial de parte</th></Form.Label>
-                    <Form.Select aria-label="serial_equipo_baja" name="serial_equipo_baja" value={formData.serial_equipo_baja}
+                    <Form.Select aria-label="serial_equipo_baja" name="serial_equipo_baja"
                       onChange={handleInputChange}>
                       <option>Seleccione serial</option>
                       {bajas.map(usuario => (
